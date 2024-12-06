@@ -10,13 +10,17 @@ const findAll=async (req,res)=>{
 }
 
 const save=async(req,res)=>{
-    try{
-        const artwork=new Artwork(req.body);
-        await artwork.save();
-        res.status(201).json(artwork)
-    }catch(e){
-        res.json(e)
-    }
+    try{ const {title,dimensions,description,price,medium_used}=req.body;
+            const artwork=new Artwork({
+                    title,
+                     dimensions,description,
+                     price, medium_used, images:req.file.originalname
+                });
+                await artwork.save();
+                res.status(200).json(artwork);
+            }catch(e){
+                res.json(e);
+  }
 }
 
 const findById=async(req,res)=>{

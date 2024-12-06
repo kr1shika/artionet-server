@@ -23,7 +23,7 @@ const artworkSchema = new mongoose.Schema({
     },
     images:{
         type:String,
-        required: false
+        required: true
     },
 })
 

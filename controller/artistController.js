@@ -1,4 +1,3 @@
-
 const Artist=require("../model/artist")
 
 const findAll=async (req,res)=>{
@@ -11,14 +10,19 @@ const findAll=async (req,res)=>{
 }
 
 const save=async(req,res)=>{
-    try{
-        const artist=new Artist(req.body);
-        await artist.save();
-        res.status(201).json(artist)
-    }catch(e){
-        res.json(e)
-    }
+    try{ const {full_name,email,contact_no,address}=req.body;
+            const artist=new Artist({
+                full_name,
+                email,contact_no,
+                address, identification_img:req.file.originalname
+                });
+                await artist.save();
+                res.status(200).json(artist);
+            }catch(e){
+                res.json(e);
+  }
 }
+
 
 const findById=async(req,res)=>{
     try{
