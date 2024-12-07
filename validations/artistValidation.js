@@ -12,7 +12,7 @@ function artistValidation(req,res,next){
     const {full_name,email,contact_no,address}=req.body;
     const {error}=artistSchema.validate({full_name, email, contact_no,address});
     if (error){
-       return res.json("Validation failed for reasons ")
+       return res.json("Validation failed for reasons")
     } 
     next()
 }
