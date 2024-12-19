@@ -2,6 +2,7 @@ const express=require("express");
 const router=express.Router();
 const { findAll,save,findById,deleteById,update } = require("../controller/artworkController");
 const multer= require("multer")
+const {authenticateToken, authorizeRole}= require("../security/Auth");
 
 const storage=multer.diskStorage({ 
     destination:function(req,res,cb){
@@ -12,8 +13,8 @@ const storage=multer.diskStorage({
     }
 })
 const upload=multer({storage})
-
-router.get("/", findAll)
+//
+router.get("/", authenticateToken , authorizeRole("admin"), findAll)
 router.post("/", upload.single('images'),save)
 router.get("/:id",findById);
 router.delete("/:id",deleteById);
