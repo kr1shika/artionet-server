@@ -29,7 +29,11 @@ const artistSchema = new mongoose.Schema ({
     artist_name:{
         type: String,
         required:false
-    }
+    }, 
+    password:{
+        type:String,
+        required:true
+    },
 
 })
 
