@@ -9,8 +9,8 @@ const userSchema = joi.object({
 })
 
 function userValidation(req, res, next) {
-    const { full_name, email, contact_no, address, password, role } = req.body;
-    const { error } = userSchema.validate({ full_name, email, contact_no, address, password, role });
+    const { full_name, email, contact_no, password, role } = req.body;
+    const { error } = userSchema.validate({ full_name, email, contact_no, password, role });
     if (error) {
         return res.json("Validation failed for reasons ")
     }

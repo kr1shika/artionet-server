@@ -4,8 +4,7 @@ const { findAll, save, findById, deleteById, update } = require("../controller/u
 const userValidation = require("../validations/userValidation")
 
 router.get("/", findAll)
-// router.post("/",buyerValidation,save)
-router.post("/", userValidation, save)
+router.post("/", save)
 
 router.get("/:id", findById);
 router.delete("/:id", deleteById);

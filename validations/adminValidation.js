@@ -17,5 +17,3 @@ function adminValidation(req,res,next){
 }
 
 module.exports=adminValidation;
-
-
