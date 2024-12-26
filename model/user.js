@@ -22,7 +22,16 @@ const userSchema = new mongoose.Schema({
         enum: ["artist", "buyer"],
         required: true,
         default: "buyer"
+    },
+    desc: {
+        type: String,
+        required: false
+    },
+    profilepic: {
+        type: String,
+        required: false
     }
+
 })
 
 const Buyer = mongoose.model("Users", userSchema);

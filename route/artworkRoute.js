@@ -12,10 +12,12 @@ const storage = multer.diskStorage({
         cb(null, file.originalname)
     }
 })
+
 const upload = multer({ storage })
-//
-router.get("/", authenticateToken, authorizeRole("Admin"), findAll)
 router.post("/", upload.single('images'), save)
+
+router.get("/", authenticateToken, authorizeRole("Admin"), findAll)
+
 router.get("/:id", findById);
 router.delete("/:id", deleteById);
 router.put("/:id", update);

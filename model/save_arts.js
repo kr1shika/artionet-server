@@ -7,7 +7,7 @@ const saveSchema = new mongoose.Schema({
     },
     buyer_id:{
         type: mongoose.Schema.Types.ObjectId,
-        ref:"Buyers"
+        ref:"Users"
     },
     status:{
         type:String,

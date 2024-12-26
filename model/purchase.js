@@ -1,24 +1,24 @@
-const mongoose=require("mongoose");
+const mongoose = require("mongoose");
 
 const purchaseSchema = new mongoose.Schema({
-    art_id:{
+    art_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:"Artworks"
+        ref: "Artworks"
     },
-    buyer_id:{
+    buyer_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:"Buyers"
+        ref: "Users"
     },
-    address:{
-        type:String,
+    address: {
+        type: String,
         required: true
     },
-    status:{
-        type:String,
+    status: {
+        type: String,
         required: true
     },
-    
+
 })
 
-const Purchase=mongoose.model("Purchases", purchaseSchema);
-module.exports=Purchase;
+const Purchase = mongoose.model("Purchases", purchaseSchema);
+module.exports = Purchase;

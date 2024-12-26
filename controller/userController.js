@@ -107,14 +107,47 @@ const deleteById = async (req, res) => {
     }
 }
 
+// const update = async (req, res) => {
+//     try {
+//         const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+//         res.status(201).json("Data updated")
+//     } catch (e) {
+//         res.json(e)
+//     }
+
+// }
+
+
 const update = async (req, res) => {
     try {
-        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.status(201).json("Data updated")
-    } catch (e) {
-        res.json(e)
+        const { id } = req.params;
+
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const { full_name, email, contact_no, desc } = req.body;
+
+        if (full_name) user.full_name = full_name;
+        if (email) user.email = email;
+        if (contact_no) user.contact_no = contact_no;
+        if (desc) user.desc = desc;
+
+        if (req.file) {
+            user.profilepic = req.file.filename;
+        }
+
+        await user.save();
+
+        res.status(200).json({ message: "User updated successfully", user });
+    } catch (error) {
+        res.status(500).json({ message: "An error occurred", error });
     }
-}
+};
+
+module.exports = { update };
+
 
 module.exports = {
     findAll,
