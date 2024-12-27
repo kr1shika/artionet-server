@@ -107,16 +107,6 @@ const deleteById = async (req, res) => {
     }
 }
 
-// const update = async (req, res) => {
-//     try {
-//         const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
-//         res.status(201).json("Data updated")
-//     } catch (e) {
-//         res.json(e)
-//     }
-
-// }
-
 
 const update = async (req, res) => {
     try {
@@ -127,12 +117,13 @@ const update = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const { full_name, email, contact_no, desc } = req.body;
+        const { full_name, email, contact_no, desc, artist_name } = req.body;
 
         if (full_name) user.full_name = full_name;
         if (email) user.email = email;
         if (contact_no) user.contact_no = contact_no;
         if (desc) user.desc = desc;
+        if (artist_name) user.artist_name = artist_name;
 
         if (req.file) {
             user.profilepic = req.file.filename;

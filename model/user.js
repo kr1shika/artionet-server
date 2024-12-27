@@ -30,9 +30,14 @@ const userSchema = new mongoose.Schema({
     profilepic: {
         type: String,
         required: false
-    }
+    },
+    artistName: {
+        type: String,
+        required: false
+    },
+
 
 })
 
-const Buyer = mongoose.model("Users", userSchema);
-module.exports = Buyer;
+const User = mongoose.model("Users", userSchema);
+module.exports = User;

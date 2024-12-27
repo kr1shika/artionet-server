@@ -1,19 +1,19 @@
-const mongoose=require("mongoose");
+const mongoose = require("mongoose");
 
 const saveSchema = new mongoose.Schema({
-    art_id:{
+    art_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:"Artworks"
+        ref: "Artworks"
     },
-    buyer_id:{
+    buyer_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:"Users"
+        ref: "Users"
     },
-    status:{
-        type:String,
+    status: {
+        type: String,
         required: true
     },
 })
 
-const Save=mongoose.model("Saves", saveSchema);
-module.exports=Save;
+const Save = mongoose.model("Saves", saveSchema);
+module.exports = Save;

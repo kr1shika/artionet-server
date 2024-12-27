@@ -7,10 +7,10 @@ const multer = require("multer")
 // Configure multer storage
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'artist_identity'); // Directory for profile images
+        cb(null, 'artist_identity');
     },
     filename: function (req, file, cb) {
-        cb(null, `${Date.now()}-${file.originalname}`); // Generate unique filenames
+        cb(null, `${Date.now()}-${file.originalname}`);
     }
 });
 
@@ -27,7 +27,7 @@ router.put("/:id", (req, res) => {
         if (err) {
             return res.status(400).json({ message: "Image upload failed", error: err.message });
         }
-        update(req, res); // Call the controller function after handling the upload
+        update(req, res);
     });
 });
 
