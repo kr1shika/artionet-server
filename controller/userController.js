@@ -14,10 +14,8 @@ const save = async (req, res) => {
     try {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(req.body.password, salt);
-
         const user = new User({ ...req.body, password: hashedPassword });
         await user.save();
-
         const transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,
@@ -88,15 +86,24 @@ const loginUser = async (req, res) => {
     }
 };
 
-
 const findById = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
-        res.status(200).json(user)
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Append the static folder path to the profile picture
+        if (user.profilepic) {
+            user.profilepic = `artist_identity/${user.profilepic}`;
+        }
+
+        res.status(200).json(user);
     } catch (e) {
-        res.json(e)
+        res.status(500).json({ error: e.message });
     }
-}
+};
+
 
 const deleteById = async (req, res) => {
     try {
@@ -117,13 +124,13 @@ const update = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const { full_name, email, contact_no, desc, artist_name } = req.body;
+        const { full_name, email, contact_no, desc, artistname } = req.body;
 
         if (full_name) user.full_name = full_name;
         if (email) user.email = email;
         if (contact_no) user.contact_no = contact_no;
         if (desc) user.desc = desc;
-        if (artist_name) user.artist_name = artist_name;
+        if (artistname) user.artistname = artistname;
 
         if (req.file) {
             user.profilepic = req.file.filename;

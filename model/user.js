@@ -31,13 +31,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    artistName: {
+    artistname: {
         type: String,
         required: false
     },
-
-
 })
-
 const User = mongoose.model("Users", userSchema);
 module.exports = User;

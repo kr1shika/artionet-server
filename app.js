@@ -6,6 +6,9 @@ const purchaseRouter = require("./route/purchaseRoute");
 const artworkRouter = require("./route/artworkRoute");
 const AuthRouter = require("./route/adminRoute");
 const cors = require("cors");
+const path = require("path");
+
+app.use("/artist_identity", express.static(path.join(__dirname, "artist_identity")));
 
 connectDb();
 app.use(express.json());
