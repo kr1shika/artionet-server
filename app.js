@@ -4,6 +4,8 @@ const connectDb = require("./config/db");
 const userRouter = require("./route/userRoute");
 const purchaseRouter = require("./route/purchaseRoute");
 const artworkRouter = require("./route/artworkRoute");
+const artEnquiryRoute = require("./route/artEnquiryRoute");
+
 const AuthRouter = require("./route/adminRoute");
 const cors = require("cors");
 const path = require("path");
@@ -31,4 +33,5 @@ app.listen(port, () => {
 app.use("/api/user", userRouter);
 app.use("/api/purchases", purchaseRouter);
 app.use("/api/artwork", artworkRouter);
+app.use("api/enquiry",artEnquiryRoute)
 app.use("/api/auth", AuthRouter);

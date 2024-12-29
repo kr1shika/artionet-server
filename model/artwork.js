@@ -1,31 +1,36 @@
-const mongoose=require("mongoose");
+const mongoose = require("mongoose");
 
 const artworkSchema = new mongoose.Schema({
-    title:{
+    title: {
         type: String,
-        required:true
-    },
-    dimensions:{
-        type:String,
-        required:true
-    },
-    description:{
-        type:String,
         required: true
     },
-    price:{
-        type:String,
+    dimensions: {
+        type: String,
         required: true
     },
-    medium_used:{
-        type:String,
+    description: {
+        type: String,
         required: true
     },
-    images:{
-        type:String,
+    price: {
+        type: String,
         required: true
     },
+    medium_used: {
+        type: String,
+        required: true
+    },
+    images: {
+        type: String,
+        required: true
+    },
+    artist: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users",
+        required: true
+    }
 })
 
-const Artworks=mongoose.model("Artworks", artworkSchema);
-module.exports=Artworks;
+const Artworks = mongoose.model("Artworks", artworkSchema);
+module.exports = Artworks;
