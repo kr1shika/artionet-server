@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { findAll, save, findById, deleteById, update } = require("../controller/artworkController");
+const { findAll, save, findById, deleteById, update, findArtworksByArtist } = require("../controller/artworkController");
 const multer = require("multer")
 const { authenticateToken, authorizeRole } = require("../security/Auth");
 
@@ -18,8 +18,11 @@ router.post("/", upload.single('images'), save)
 
 router.get("/", authenticateToken, authorizeRole("Admin"), findAll)
 
-router.get("/:id", findById);
+// router.get("/:id", findById);
 router.delete("/:id", deleteById);
 router.put("/:id", update);
 
 module.exports = router;
+
+
+router.get("/:artistId", findArtworksByArtist);

@@ -33,5 +33,5 @@ app.listen(port, () => {
 app.use("/api/user", userRouter);
 app.use("/api/purchases", purchaseRouter);
 app.use("/api/artwork", artworkRouter);
-app.use("api/enquiry",artEnquiryRoute)
+app.use("/api/enquiry", artEnquiryRoute)
 app.use("/api/auth", AuthRouter);

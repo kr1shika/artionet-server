@@ -25,12 +25,12 @@ const artworkSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    artist: {
+    artistId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Users",
         required: true
     }
 })
-
 const Artworks = mongoose.model("Artworks", artworkSchema);
 module.exports = Artworks;
+// 676961d53f532ba442aed36d
