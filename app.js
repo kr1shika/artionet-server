@@ -9,7 +9,7 @@ const artEnquiryRoute = require("./route/artEnquiryRoute");
 const AuthRouter = require("./route/adminRoute");
 const cors = require("cors");
 const path = require("path");
-
+app.use("/artwork_space", express.static(path.join(__dirname, "artwork_space")));
 app.use("/artist_identity", express.static(path.join(__dirname, "artist_identity")));
 
 connectDb();

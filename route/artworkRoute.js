@@ -15,7 +15,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage })
 router.post("/", upload.single('images'), save)
-
 router.get("/", authenticateToken, authorizeRole("Admin"), findAll)
 
 // router.get("/:id", findById);

@@ -31,17 +31,43 @@ const findAll = async (req, res) => {
 const save = async (req, res) => {
     try {
         const { title, dimensions, description, price, medium_used, artistId } = req.body;
+
+        // Constructing the full file path for the image
+        const filePath = req.file ? `artwork_space/${req.file.originalname}` : null;
+
+        if (!filePath) {
+            return res.status(400).json({ message: "Image file is required." });
+        }
+
+        if (!title || !dimensions || !description || !price || !medium_used || !artistId) {
+            return res.status(400).json({ message: "All fields are required." });
+        }
+
         const artwork = new Artwork({
             title,
-            dimensions, description,
-            price, medium_used, images: req.file.originalname, artistId
+            dimensions,
+            description,
+            price,
+            medium_used,
+            images: filePath,
+            artistId,
         });
+
         await artwork.save();
-        res.status(200).json(artwork);
-    } catch (e) {
-        res.json(e);
+
+        res.status(201).json({
+            message: "Artwork saved successfully.",
+            artwork,
+        });
+    } catch (error) {
+        console.error("Error saving artwork:", error.message);
+        res.status(500).json({
+            message: "An error occurred while saving the artwork.",
+            error: error.message,
+        });
     }
-}
+};
+
 
 const findById = async (req, res) => {
     try {
