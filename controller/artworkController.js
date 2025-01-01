@@ -1,5 +1,32 @@
 const Artwork = require("../model/artwork")
 
+const findArtworksByCategoryAndSubcategory = async (req, res) => {
+    try {
+        const { category, subcategory } = req.params;
+
+        console.log("Category:", category);
+        console.log("Subcategory:", subcategory);
+        const filter = {};
+
+        if (category && category !== "all") {
+            filter.categories = category;
+        }
+
+        if (subcategory && subcategory !== "~") {
+            filter.subcategories = subcategory;
+        }
+
+        const artworks = await Artwork.find(filter).populate('artistId');
+
+        if (!artworks.length) {
+            return res.status(404).json({ message: "No artworks found matching the given category and subcategory." });
+        }
+        res.status(200).json(artworks);
+    } catch (e) {
+        res.status(500).json({ message: "An error occurred while fetching artworks.", error: e.message });
+    }
+};
+
 const findArtworksByArtist = async (req, res) => {
     try {
         const { artistId } = req.params;
@@ -102,5 +129,7 @@ module.exports = {
     findById,
     deleteById,
     update,
-    findArtworksByArtist
+    findArtworksByArtist,
+    findArtworksByCategoryAndSubcategory,
+
 }

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { findAll, save, findById, deleteById, update, findArtworksByArtist } = require("../controller/artworkController");
+const { findAll, save, findById, deleteById, update, findArtworksByArtist, findArtworksByCategoryAndSubcategory } = require("../controller/artworkController");
 const multer = require("multer")
 const { authenticateToken, authorizeRole } = require("../security/Auth");
 
@@ -15,11 +15,14 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage })
 router.post("/", upload.single('images'), save)
-router.get("/", authenticateToken, authorizeRole("Admin"), findAll)
+router.get("/", findAll)
 
-// router.get("/:id", findById);
+router.get("/find/:id", findById);
 router.delete("/:id", deleteById);
 router.put("/:id", update);
+router.get('/category/:category/subcategory/:subcategory', findArtworksByCategoryAndSubcategory);
+router.get('/category/:category/subcategory/~', findArtworksByCategoryAndSubcategory);
+
 
 module.exports = router;
 
