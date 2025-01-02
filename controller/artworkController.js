@@ -17,7 +17,6 @@ const findArtworksByCategoryAndSubcategory = async (req, res) => {
         }
 
         const artworks = await Artwork.find(filter).populate('artistId');
-
         if (!artworks.length) {
             return res.status(404).json({ message: "No artworks found matching the given category and subcategory." });
         }
@@ -57,7 +56,7 @@ const findAll = async (req, res) => {
 
 const save = async (req, res) => {
     try {
-        const { title, dimensions, description, price, medium_used, artistId } = req.body;
+        const { title, dimensions, description, price, medium_used, artistId, categories } = req.body;
 
         // Constructing the full file path for the image
         const filePath = req.file ? `artwork_space/${req.file.originalname}` : null;
@@ -66,7 +65,7 @@ const save = async (req, res) => {
             return res.status(400).json({ message: "Image file is required." });
         }
 
-        if (!title || !dimensions || !description || !price || !medium_used || !artistId) {
+        if (!title || !dimensions || !description || !price || !medium_used || !artistId || !categories) {
             return res.status(400).json({ message: "All fields are required." });
         }
 
@@ -78,6 +77,8 @@ const save = async (req, res) => {
             medium_used,
             images: filePath,
             artistId,
+            categories
+
         });
 
         await artwork.save();
@@ -94,7 +95,6 @@ const save = async (req, res) => {
         });
     }
 };
-
 
 const findById = async (req, res) => {
     try {
@@ -114,21 +114,53 @@ const deleteById = async (req, res) => {
     }
 }
 
-const update = async (req, res) => {
+const updateArtwork = async (req, res) => {
     try {
-        const artwork = await Artwork.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.status(201).json("Data updated")
-    } catch (e) {
-        res.json(e)
+        const { id } = req.params;
+
+        // Find the artwork by ID
+        const artwork = await Artwork.findById(id);
+        if (!artwork) {
+            return res.status(404).json({ message: "Artwork not found" });
+        }
+        const {
+            title,
+            dimensions,
+            description,
+            price,
+            medium_used,
+            categories,
+            subcategories,
+        } = req.body;
+
+        if (title) artwork.title = title;
+        if (dimensions) artwork.dimensions = dimensions;
+        if (description) artwork.description = description;
+        if (price) artwork.price = price;
+        if (medium_used) artwork.medium_used = medium_used;
+        if (categories) artwork.categories = categories;
+        if (subcategories) artwork.subcategories = subcategories;
+
+        // Handle file upload for images
+        if (req.file) {
+            artwork.images = req.file.filename;
+        }
+        // Save the updated artwork
+        await artwork.save();
+
+        res.status(200).json({ message: "Artwork updated successfully", artwork });
+    } catch (error) {
+        res.status(500).json({ message: "An error occurred", error });
     }
-}
+};
+
 
 module.exports = {
     findAll,
     save,
     findById,
     deleteById,
-    update,
+    updateArtwork,
     findArtworksByArtist,
     findArtworksByCategoryAndSubcategory,
 

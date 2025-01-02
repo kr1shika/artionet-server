@@ -125,19 +125,15 @@ const update = async (req, res) => {
         }
 
         const { full_name, email, contact_no, desc, artistname } = req.body;
-
         if (full_name) user.full_name = full_name;
         if (email) user.email = email;
         if (contact_no) user.contact_no = contact_no;
         if (desc) user.desc = desc;
         if (artistname) user.artistname = artistname;
-
         if (req.file) {
             user.profilepic = req.file.filename;
         }
-
         await user.save();
-
         res.status(200).json({ message: "User updated successfully", user });
     } catch (error) {
         res.status(500).json({ message: "An error occurred", error });

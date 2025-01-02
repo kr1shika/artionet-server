@@ -1,4 +1,4 @@
-// Artworks Schema
+const mongoose = require("mongoose");
 const artworkSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -38,8 +38,7 @@ const artworkSchema = new mongoose.Schema({
     subcategories: {
         type: String,
         enum: ["Abstract", "Modern", "Contemporary", "Impressionism", "Realism", "Expressionism", "Surrealism"],
-        required: true,
-        default: "~"
+        required: false,
     },
 });
 
