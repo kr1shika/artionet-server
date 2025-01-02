@@ -118,11 +118,11 @@ const updateArtwork = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Find the artwork by ID
         const artwork = await Artwork.findById(id);
         if (!artwork) {
             return res.status(404).json({ message: "Artwork not found" });
         }
+
         const {
             title,
             dimensions,
@@ -141,19 +141,30 @@ const updateArtwork = async (req, res) => {
         if (categories) artwork.categories = categories;
         if (subcategories) artwork.subcategories = subcategories;
 
-        // Handle file upload for images
         if (req.file) {
-            artwork.images = req.file.filename;
+            const filePath = `artwork_space/${req.file.originalname}`;
+            artwork.images = filePath;
         }
-        // Save the updated artwork
+
         await artwork.save();
 
-        res.status(200).json({ message: "Artwork updated successfully", artwork });
+        res.status(200).json({
+            message: "Artwork updated successfully.",
+            artwork,
+        });
     } catch (error) {
-        res.status(500).json({ message: "An error occurred", error });
+        console.error("Error updating artwork:", error.message);
+        res.status(500).json({
+            message: "An error occurred while updating the artwork.",
+            error: error.message,
+        });
     }
 };
 
+
+module.exports = {
+    updateArtwork
+}
 
 module.exports = {
     findAll,

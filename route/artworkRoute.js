@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { findAll, save, findById, deleteById, update, findArtworksByArtist, findArtworksByCategoryAndSubcategory } = require("../controller/artworkController");
+const { findAll, save, findById, deleteById, updateArtwork, findArtworksByArtist, findArtworksByCategoryAndSubcategory } = require("../controller/artworkController");
 const multer = require("multer")
 const { authenticateToken, authorizeRole } = require("../security/Auth");
 
@@ -19,11 +19,10 @@ router.get("/", findAll)
 
 router.get("/find/:id", findById);
 router.delete("/:id", deleteById);
-router.put("/:id", update);
+router.put("/update/:id", upload.single('images'), updateArtwork);
+// 6774ecf7be5c2eed553a24a1
 router.get('/category/:category/subcategory/:subcategory', findArtworksByCategoryAndSubcategory);
 router.get('/category/:category/subcategory/~', findArtworksByCategoryAndSubcategory);
-
-
 module.exports = router;
 
 
