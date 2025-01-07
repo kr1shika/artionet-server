@@ -80,7 +80,11 @@ const loginUser = async (req, res) => {
             { expiresIn: "2h" }
         );
 
-        res.status(200).json({ token });
+        res.status(200).json({
+            token,
+            id: user._id,
+            role: user.role
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

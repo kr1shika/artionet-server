@@ -34,7 +34,6 @@ const findArtworksByArtist = async (req, res) => {
         const artwork = await Artwork.find({ artistId: artistId }).populate('title').populate('artistId'); // Add populate if necessary
 
         console.log("Found Artwork:", artwork);
-
         if (!artwork.length) {
             return res.status(404).json({ message: "No artwork found for this artist." });
         }
@@ -57,7 +56,6 @@ const findAll = async (req, res) => {
 const save = async (req, res) => {
     try {
         const { title, dimensions, description, price, medium_used, artistId, categories } = req.body;
-
         // Constructing the full file path for the image
         const filePath = req.file ? `artwork_space/${req.file.originalname}` : null;
 
@@ -78,7 +76,6 @@ const save = async (req, res) => {
             images: filePath,
             artistId,
             categories
-
         });
 
         await artwork.save();

@@ -1,4 +1,4 @@
-const Saveart = require("../model/save_arts")
+const Saveart = require("../model/save_arts");
 
 const findAll = async (req, res) => {
     try {
@@ -9,15 +9,23 @@ const findAll = async (req, res) => {
     }
 }
 
-const Save = require("../models/saveModel");
-
 const save = async (req, res) => {
     try {
         const { art_id, buyer_id } = req.body;
         if (!art_id || !buyer_id) {
             return res.status(400).json({ error: "art_id and buyer_id are required" });
         }
-        const savearts = new Save({
+
+        // Check if the art is already liked by the user
+        const existingSave = await Saveart.findOne({ art_id, buyer_id });
+
+        if (existingSave) {
+            // If already liked, return a response indicating so
+            return res.status(400).json({ message: "Art already liked by this user" });
+        }
+
+        // Create a new Saveart instance if not already liked
+        const savearts = new Saveart({
             art_id,
             buyer_id,
             status: "liked",
@@ -30,10 +38,31 @@ const save = async (req, res) => {
     }
 };
 
-module.exports = { save };
+const deleteSaveart = async (req, res) => {
+    try {
+        const { art_id, buyer_id } = req.body;
+        if (!art_id || !buyer_id) {
+            return res.status(400).json({ error: "art_id and buyer_id are required" });
+        }
 
+        // Find the saved art by art_id and buyer_id
+        const savedArt = await Saveart.findOne({ art_id, buyer_id });
+
+        if (!savedArt) {
+            return res.status(404).json({ message: "Saved art not found" });
+        }
+
+        // Delete the saved art record
+        await Saveart.deleteOne({ art_id, buyer_id });
+
+        res.status(200).json({ message: "Saved art removed successfully" });
+    } catch (e) {
+        res.status(500).json({ error: "Failed to delete saved art", details: e.message });
+    }
+};
 
 module.exports = {
     findAll,
     save,
+    deleteSaveart
 }

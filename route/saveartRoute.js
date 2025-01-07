@@ -1,8 +1,10 @@
-const express=require("express");
-const router=express.Router();
-const { findAll,save,findById,deleteById,update } = require("../controller/saveartController");
+const express = require("express");
+const router = express.Router();
+const { findAll, save, deleteSaveart } = require("../controller/saveartController");
 
 router.get("/", findAll)
-router.post("/",save)
+router.post("/", save)
+router.delete("/", deleteSaveart);
 
-module.exports=router;
+
+module.exports = router;
