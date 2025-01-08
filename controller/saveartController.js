@@ -81,11 +81,31 @@ const checkStatus = async (req, res) => {
     }
 };
 
+const findSavedArtsByUser = async (req, res) => {
+    try {
+        const { buyer_id } = req.params; // Fetch buyer_id from route parameters
 
+        if (!buyer_id) {
+            return res.status(400).json({ error: "buyer_id is required" });
+        }
+
+        // Find all saved artworks for the given buyer_id
+        const savedArts = await Saveart.find({ buyer_id }).populate("art_id");
+
+        if (!savedArts.length) {
+            return res.status(404).json({ message: "No saved artworks found for this user" });
+        }
+
+        res.status(200).json(savedArts);
+    } catch (e) {
+        res.status(500).json({ error: "Failed to fetch saved artworks", details: e.message });
+    }
+};
 
 module.exports = {
     findAll,
     save,
     deleteSaveart,
-    checkStatus
+    checkStatus,
+    findSavedArtsByUser
 }
