@@ -61,8 +61,31 @@ const deleteSaveart = async (req, res) => {
     }
 };
 
+const checkStatus = async (req, res) => {
+    try {
+        const { artId } = req.params; // Fetch artId from route parameters
+        const { buyer_id } = req.query; // Fetch buyer_id from query string
+
+        if (!artId || !buyer_id) {
+            return res.status(400).json({ error: "artId and buyer_id are required" });
+        }
+
+        // Check if the artwork is saved by the buyer
+        const savedArt = await Saveart.findOne({ art_id: artId, buyer_id });
+
+        // Return the like status
+        const isLiked = !!savedArt && savedArt.status === "liked";
+        return res.status(200).json({ isLiked });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to check status", details: error.message });
+    }
+};
+
+
+
 module.exports = {
     findAll,
     save,
-    deleteSaveart
+    deleteSaveart,
+    checkStatus
 }
