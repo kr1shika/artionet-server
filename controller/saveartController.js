@@ -24,7 +24,6 @@ const save = async (req, res) => {
             return res.status(400).json({ message: "Art already liked by this user" });
         }
 
-        // Create a new Saveart instance if not already liked
         const savearts = new Saveart({
             art_id,
             buyer_id,
@@ -45,14 +44,12 @@ const deleteSaveart = async (req, res) => {
             return res.status(400).json({ error: "art_id and buyer_id are required" });
         }
 
-        // Find the saved art by art_id and buyer_id
         const savedArt = await Saveart.findOne({ art_id, buyer_id });
 
         if (!savedArt) {
             return res.status(404).json({ message: "Saved art not found" });
         }
 
-        // Delete the saved art record
         await Saveart.deleteOne({ art_id, buyer_id });
 
         res.status(200).json({ message: "Saved art removed successfully" });
@@ -63,14 +60,13 @@ const deleteSaveart = async (req, res) => {
 
 const checkStatus = async (req, res) => {
     try {
-        const { artId } = req.params; // Fetch artId from route parameters
-        const { buyer_id } = req.query; // Fetch buyer_id from query string
+        const { artId } = req.params; 
+        const { buyer_id } = req.query; 
 
         if (!artId || !buyer_id) {
             return res.status(400).json({ error: "artId and buyer_id are required" });
         }
 
-        // Check if the artwork is saved by the buyer
         const savedArt = await Saveart.findOne({ art_id: artId, buyer_id });
 
         // Return the like status
@@ -83,13 +79,12 @@ const checkStatus = async (req, res) => {
 
 const findSavedArtsByUser = async (req, res) => {
     try {
-        const { buyer_id } = req.params; // Fetch buyer_id from route parameters
+        const { buyer_id } = req.params;
 
         if (!buyer_id) {
             return res.status(400).json({ error: "buyer_id is required" });
         }
 
-        // Find all saved artworks for the given buyer_id
         const savedArts = await Saveart.find({ buyer_id }).populate("art_id");
 
         if (!savedArts.length) {

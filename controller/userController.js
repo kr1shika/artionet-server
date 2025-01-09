@@ -97,7 +97,6 @@ const findById = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Append the static folder path to the profile picture
         if (user.profilepic) {
             user.profilepic = `artist_identity/${user.profilepic}`;
         }

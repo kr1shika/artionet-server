@@ -17,8 +17,19 @@ const purchaseSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-
-})
+    phone_number: {
+        type: String,
+        required: true
+    },
+    otp: {
+        type: String, // Store the generated OTP
+        required: false
+    },
+    otp_expiration: {
+        type: Date, // Store the expiration time of the OTP
+        required: false
+    }
+});
 
 const Purchase = mongoose.model("Purchases", purchaseSchema);
 module.exports = Purchase;
