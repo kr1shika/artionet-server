@@ -1,8 +1,8 @@
-const express=require("express");
-const router=express.Router();
-const { findAll,save,findById,deleteById,update } = require("../controller/purchaseController");
+const express = require("express");
+const router = express.Router();
+const { findAll, savePurchase } = require("../controller/purchaseController");
 
 router.get("/", findAll)
-router.post("/",save)
+router.post("/", savePurchase)
 
-module.exports=router;
+module.exports = router;
