@@ -39,47 +39,6 @@ const save = async (req, res) => {
     }
 };
 
-// const fetchChat = async (req, res) => {
-//     try {
-//         const { art_id, artistId, buyer_id } = req.params;
-
-//         if (!art_id || !artistId || !buyer_id) {
-//             return res.status(400).json({
-//                 error: "art_id, artistId, and buyer_id are required to fetch the chat.",
-//             });
-//         }
-
-//         const enquiry = await ArtEnquiry.findOne({
-//             art_id,
-//             buyer_id,
-//         })
-//             .populate({
-//                 path: "art_id",
-//                 select: "title description artistId",
-//                 populate: { path: "artistId", select: "name email" }, // Populating artistId
-//             })
-//             .populate("buyer_id", "name email");
-
-//         if (!enquiry) {
-//             return res.status(404).json({ error: "Enquiry not found." });
-//         }
-//         if (!enquiry.art_id.artistId) {
-//             return res.status(404).json({ error: "Artist not found for this artwork." });
-//         }
-
-//         if (!enquiry.art_id.artistId || enquiry.art_id.artistId.toString() !== artistId) {
-//             console.log("Artist ID Mismatch:", {
-//                 expected: artistId,
-//                 actual: enquiry.art_id.artistId ? enquiry.art_id.artistId.toString() : null,
-//             });
-//             return res.status(403).json({ error: "Unauthorized access to this chat." });
-//         }
-//         res.status(200).json(enquiry);
-//     } catch (e) {
-//         res.status(500).json({ error: e.message });
-//     }
-// };
-
 const fetchChat = async (req, res) => {
     try {
         const { art_id, artistId, buyer_id } = req.params;
@@ -97,7 +56,7 @@ const fetchChat = async (req, res) => {
             .populate({
                 path: "art_id",
                 select: "title description artistId",
-                populate: { path: "artistId", select: "_id email" }, // Include only necessary fields
+                populate: { path: "artistId", select: "_id email" },
             })
             .populate("buyer_id", "name email");
 
@@ -134,7 +93,6 @@ const respondToChat = async (req, res) => {
             });
         }
 
-        // Find the enquiry and populate the art_id field
         const enquiry = await ArtEnquiry.findOne({
             art_id,
             buyer_id,
@@ -144,7 +102,6 @@ const respondToChat = async (req, res) => {
             return res.status(404).json({ error: "Enquiry not found." });
         }
 
-        // Verify artist ID
         const artistObjectId = enquiry.art_id.artistId.toString(); // Access populated artistId
         if (artistObjectId !== artistId) {
             console.log("Artist ID Mismatch:", {

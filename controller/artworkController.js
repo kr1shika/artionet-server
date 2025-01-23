@@ -1,12 +1,10 @@
 const Artwork = require("../model/artwork")
+const Notification = require("../model/userNotification");
 
 const findArtworksByCategoryAndSubcategory = async (req, res) => {
     try {
         const { category, subcategory } = req.params;
-
-        console.log("Category:", category);
-        console.log("Subcategory:", subcategory);
-        const filter = {};
+        const filter = { status: "approved" }; // Only approved artworks
 
         if (category && category !== "all") {
             filter.categories = category;
@@ -16,7 +14,7 @@ const findArtworksByCategoryAndSubcategory = async (req, res) => {
             filter.subcategories = subcategory;
         }
 
-        const artworks = await Artwork.find(filter).populate('artistId');
+        const artworks = await Artwork.find(filter).populate("artistId");
         if (!artworks.length) {
             return res.status(404).json({ message: "No artworks found matching the given category and subcategory." });
         }
@@ -56,7 +54,6 @@ const findAll = async (req, res) => {
 const save = async (req, res) => {
     try {
         const { title, dimensions, description, price, medium_used, artistId, categories } = req.body;
-        // Constructing the full file path for the image
         const filePath = req.file ? `artwork_space/${req.file.originalname}` : null;
 
         if (!filePath) {
@@ -75,19 +72,75 @@ const save = async (req, res) => {
             medium_used,
             images: filePath,
             artistId,
-            categories
+            categories,
+            status: "pending", // Default to pending
         });
 
         await artwork.save();
 
+        // Create a notification for the user
+        const notification = new Notification({
+            userId: artistId,
+            message: "Your artwork has been submitted and is pending approval."
+        });
+        await notification.save();
+
         res.status(201).json({
-            message: "Artwork saved successfully.",
+            message: "Artwork saved successfully and is pending approval.",
             artwork,
         });
     } catch (error) {
         console.error("Error saving artwork:", error.message);
         res.status(500).json({
             message: "An error occurred while saving the artwork.",
+            error: error.message,
+        });
+    }
+};
+
+const approveArtwork = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status, adminComment } = req.body; // "approved" or "declined"
+
+        if (!["approved", "declined"].includes(status)) {
+            return res.status(400).json({ message: "Invalid status value. Allowed values: 'approved', 'declined'." });
+        }
+
+        const artwork = await Artwork.findById(id);
+        if (!artwork) {
+            return res.status(404).json({ message: "Artwork not found." });
+        }
+
+        // Update artwork status and admin comment (if declined)
+        artwork.status = status;
+        if (status === "declined" && adminComment) {
+            artwork.adminComment = adminComment;
+        } else {
+            artwork.adminComment = null; // Clear admin comment if approved
+        }
+
+        await artwork.save();
+
+        // Create a notification for the user
+        const notificationMessage = status === "approved"
+            ? `Your artwork "${artwork.title}" has been approved.`
+            : `Your artwork "${artwork.title}" has been declined. Reason: ${adminComment}`;
+
+        const notification = new Notification({
+            userId: artwork.artistId,
+            message: notificationMessage
+        });
+        await notification.save();
+
+        res.status(200).json({
+            message: `Artwork ${status} successfully.`,
+            artwork,
+        });
+    } catch (error) {
+        console.error("Error updating artwork status:", error.message);
+        res.status(500).json({
+            message: "An error occurred while updating the artwork status.",
             error: error.message,
         });
     }
@@ -105,11 +158,12 @@ const findById = async (req, res) => {
 const deleteById = async (req, res) => {
     try {
         const artwork = await Artwork.findByIdAndDelete(req.params.id);
-        res.status(200).json("Data deleted")
-    } catch (e) {
-        res.json(e)
+        if (!artwork) return res.status(404).json({ message: "Artwork not found" });
+        res.status(200).json({ message: "Artwork deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-}
+};
 
 const updateArtwork = async (req, res) => {
     try {
@@ -159,17 +213,45 @@ const updateArtwork = async (req, res) => {
 };
 
 
-module.exports = {
-    updateArtwork
-}
+
+const getPendingArtworks = async (req, res) => {
+    try {
+        const { page = 1, limit = 10 } = req.query; // Optional pagination
+
+        const pendingArtworks = await Artwork.find({ status: "pending" })
+            .populate("artistId") // Populate artist details if needed
+            .skip((page - 1) * limit) // Skip for pagination
+            .limit(Number(limit)); // Limit the number of results
+
+        if (!pendingArtworks.length) {
+            return res.status(404).json({
+                success: false,
+                message: "No pending artworks found.",
+            });
+        }
+        res.status(200).json({
+            success: true,
+            total: pendingArtworks.length,
+            data: pendingArtworks,
+        });
+    } catch (error) {
+        console.error("Error fetching pending artworks:", error.message);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while fetching pending artworks.",
+            error: error.message,
+        });
+    }
+};
+
 
 module.exports = {
+    approveArtwork,
     findAll,
     save,
     findById,
     deleteById,
     updateArtwork,
     findArtworksByArtist,
-    findArtworksByCategoryAndSubcategory,
-
+    findArtworksByCategoryAndSubcategory, getPendingArtworks
 }

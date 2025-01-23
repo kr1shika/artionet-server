@@ -1,3 +1,4 @@
+// artwork.js
 const mongoose = require("mongoose");
 const artworkSchema = new mongoose.Schema({
     title: {
@@ -40,6 +41,17 @@ const artworkSchema = new mongoose.Schema({
         enum: ["Abstract", "Modern", "Contemporary", "Impressionism", "Realism", "Expressionism", "Surrealism"],
         required: false,
     },
+    archive: {
+        type: String,
+        enum: ["public", "private"],
+        required: false,
+    },
+    archive: { type: String, enum: ["public", "private"] },
+    status: { type: String, enum: ["pending", "approved", "declined"], default: "pending" },
+    adminComment: {
+        type: String,
+        required: false
+    }
 });
 
 const Artworks = mongoose.model("Artworks", artworkSchema);

@@ -7,6 +7,7 @@ const artworkRouter = require("./route/artworkRoute");
 const artEnquiryRoute = require("./route/artEnquiryRoute");
 const saveArtRouter = require("./route/saveartRoute");
 const AuthRouter = require("./route/adminRoute");
+const userNotification = require("./route/userNotification");
 const cors = require("cors");
 const path = require("path");
 const { save } = require('./controller/artworkController');
@@ -37,3 +38,4 @@ app.use("/api/artwork", artworkRouter);
 app.use("/api/saveArt", saveArtRouter);
 app.use("/api/enquiry", artEnquiryRoute)
 app.use("/api/auth", AuthRouter);
+app.use("/api/notifications", userNotification);
