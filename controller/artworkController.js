@@ -51,6 +51,8 @@ const findAll = async (req, res) => {
     }
 }
 
+const ActivityLog = require("../model/activityLog");
+
 const save = async (req, res) => {
     try {
         const { title, dimensions, description, price, medium_used, artistId, categories } = req.body;
@@ -63,7 +65,6 @@ const save = async (req, res) => {
         if (!title || !dimensions || !description || !price || !medium_used || !artistId || !categories) {
             return res.status(400).json({ message: "All fields are required." });
         }
-
         const artwork = new Artwork({
             title,
             dimensions,
@@ -73,10 +74,19 @@ const save = async (req, res) => {
             images: filePath,
             artistId,
             categories,
-            status: "pending", // Default to pending
+            status: "pending",
         });
 
         await artwork.save();
+
+        // Log the activity
+        const activityLog = new ActivityLog({
+            userId: artistId,
+            userType: "artist",
+            action: "posted_artwork",
+            details: `Artist posted a new artwork titled "${title}" and is waiting for approval.`,
+        });
+        await activityLog.save();
 
         // Create a notification for the user
         const notification = new Notification({

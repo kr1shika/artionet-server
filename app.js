@@ -38,4 +38,4 @@ app.use("/api/artwork", artworkRouter);
 app.use("/api/saveArt", saveArtRouter);
 app.use("/api/enquiry", artEnquiryRoute)
 app.use("/api/auth", AuthRouter);
-app.use("/api/notifications", userNotification);
+app.use("/api/user-notifications", userNotification);

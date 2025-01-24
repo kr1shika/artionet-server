@@ -1,4 +1,3 @@
-// 
 const mongoose = require("mongoose");
 
 const userNotificationSchema = new mongoose.Schema({
@@ -15,10 +14,15 @@ const userNotificationSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    deleted: {
+        type: Boolean,
+        default: false
+    },
     createdAt: {
         type: Date,
         default: Date.now
     }
 });
+
 const userNotification = mongoose.model("userNotification", userNotificationSchema);
 module.exports = userNotification;
