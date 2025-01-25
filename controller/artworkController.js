@@ -52,7 +52,6 @@ const findAll = async (req, res) => {
 }
 
 const ActivityLog = require("../model/activityLog");
-
 const save = async (req, res) => {
     try {
         const { title, dimensions, description, price, medium_used, artistId, categories } = req.body;
@@ -65,6 +64,7 @@ const save = async (req, res) => {
         if (!title || !dimensions || !description || !price || !medium_used || !artistId || !categories) {
             return res.status(400).json({ message: "All fields are required." });
         }
+
         const artwork = new Artwork({
             title,
             dimensions,
@@ -74,7 +74,7 @@ const save = async (req, res) => {
             images: filePath,
             artistId,
             categories,
-            status: "pending",
+            status: "pending", // Default to pending
         });
 
         await artwork.save();
@@ -88,10 +88,11 @@ const save = async (req, res) => {
         });
         await activityLog.save();
 
-        // Create a notification for the user
+        // Create a notification for the user with a title
         const notification = new Notification({
             userId: artistId,
-            message: "Your artwork has been submitted and is pending approval."
+            title: "Artwork Submission", // Add a title
+            message: `Your artwork titled "${title}" has been submitted and is pending approval.`, // Include the artwork title in the message
         });
         await notification.save();
 
@@ -121,7 +122,6 @@ const approveArtwork = async (req, res) => {
         if (!artwork) {
             return res.status(404).json({ message: "Artwork not found." });
         }
-
         // Update artwork status and admin comment (if declined)
         artwork.status = status;
         if (status === "declined" && adminComment) {
@@ -139,6 +139,7 @@ const approveArtwork = async (req, res) => {
 
         const notification = new Notification({
             userId: artwork.artistId,
+            title: "Artwork Status Update", // Add a title
             message: notificationMessage
         });
         await notification.save();

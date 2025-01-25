@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const { getActivityLogs } = require("../controllers/activityLogController");
+const { getActivityLogs } = require("../controller/activityLogController");
 
 // Get all activity logs
-router.get("/activity-logs", getActivityLogs);
+router.get("/get", getActivityLogs);
 
 module.exports = router;

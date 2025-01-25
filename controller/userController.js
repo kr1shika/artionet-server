@@ -142,6 +142,15 @@ const update = async (req, res) => {
         res.status(500).json({ message: "An error occurred", error });
     }
 };
+const findUsersByRole = async (req, res) => {
+    try {
+        const { role } = req.query;
+        const users = await User.find({ role });
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 module.exports = { update };
 
@@ -152,5 +161,6 @@ module.exports = {
     findById,
     deleteById,
     update,
-    loginUser
+    loginUser, findUsersByRole
+
 }
