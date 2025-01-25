@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { getPendingArtworks, findAll, save, findById, deleteById, updateArtwork, findArtworksByArtist, findArtworksByCategoryAndSubcategory, approveArtwork } = require("../controller/artworkController");
+const { archiveArtwork, unarchiveArtwork, getPendingArtworks, findAll, save, findById, deleteById, updateArtwork, findArtworksByArtist, findArtworksByCategoryAndSubcategory, approveArtwork } = require("../controller/artworkController");
 const multer = require("multer")
 const { authenticateToken, authorizeRole } = require("../security/Auth");
 
@@ -25,6 +25,8 @@ router.get('/category/:category/subcategory/:subcategory', findArtworksByCategor
 router.get('/category/:category/subcategory/~', findArtworksByCategoryAndSubcategory);
 router.patch("/approve/:id", approveArtwork);
 router.get("/pending-artworks", getPendingArtworks);
+router.patch("/archive/:id", archiveArtwork); // Route for archiving
+router.patch("/unarchive/:id", unarchiveArtwork);
 module.exports = router;
 router.get("/:artistId", findArtworksByArtist);
 

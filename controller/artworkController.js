@@ -255,8 +255,59 @@ const getPendingArtworks = async (req, res) => {
     }
 };
 
+const archiveArtwork = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const artwork = await Artwork.findById(id);
+        if (!artwork) {
+            return res.status(404).json({ message: "Artwork not found." });
+        }
+
+        artwork.archive = "private";
+        await artwork.save();
+
+        res.status(200).json({
+            message: "Artwork archived successfully.",
+            artwork,
+        });
+    } catch (error) {
+        console.error("Error archiving artwork:", error.message);
+        res.status(500).json({
+            message: "An error occurred while archiving the artwork.",
+            error: error.message,
+        });
+    }
+};
+
+const unarchiveArtwork = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const artwork = await Artwork.findById(id);
+        if (!artwork) {
+            return res.status(404).json({ message: "Artwork not found." });
+        }
+
+        artwork.archive = "public";
+        await artwork.save();
+
+        res.status(200).json({
+            message: "Artwork unarchived successfully.",
+            artwork,
+        });
+    } catch (error) {
+        console.error("Error unarchiving artwork:", error.message);
+        res.status(500).json({
+            message: "An error occurred while unarchiving the artwork.",
+            error: error.message,
+        });
+    }
+};
 
 module.exports = {
+    archiveArtwork,
+    unarchiveArtwork,
     approveArtwork,
     findAll,
     save,

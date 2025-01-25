@@ -44,9 +44,8 @@ const artworkSchema = new mongoose.Schema({
     archive: {
         type: String,
         enum: ["public", "private"],
-        required: false,
+        default: "public"
     },
-    archive: { type: String, enum: ["public", "private"] },
     status: { type: String, enum: ["pending", "approved", "declined"], default: "pending" },
     adminComment: {
         type: String,
