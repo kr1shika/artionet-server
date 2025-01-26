@@ -60,8 +60,8 @@ const deleteSaveart = async (req, res) => {
 
 const checkStatus = async (req, res) => {
     try {
-        const { artId } = req.params; 
-        const { buyer_id } = req.query; 
+        const { artId } = req.params;
+        const { buyer_id } = req.query;
 
         if (!artId || !buyer_id) {
             return res.status(400).json({ error: "artId and buyer_id are required" });
@@ -97,10 +97,27 @@ const findSavedArtsByUser = async (req, res) => {
     }
 };
 
+const getSavedCount = async (req, res) => {
+    try {
+        const { art_id } = req.params;
+
+        if (!art_id) {
+            return res.status(400).json({ error: "art_id is required" });
+        }
+
+        // Count the number of saves for the given artwork
+        const saveCount = await Saveart.countDocuments({ art_id });
+
+        res.status(200).json({ art_id, saveCount });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch saved count", details: error.message });
+    }
+};
+
 module.exports = {
     findAll,
     save,
     deleteSaveart,
     checkStatus,
-    findSavedArtsByUser
+    findSavedArtsByUser, getSavedCount
 }

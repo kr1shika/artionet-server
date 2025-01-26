@@ -1,10 +1,12 @@
-const Artwork = require("../model/artwork")
+const Artwork = require("../model/artwork");
 const Notification = require("../model/userNotification");
+const Save = require("../model/save_arts"); // Import the Save model
+const ActivityLog = require("../model/activityLog");
 
 const findArtworksByCategoryAndSubcategory = async (req, res) => {
     try {
         const { category, subcategory } = req.params;
-        const filter = { status: "approved" }; // Only approved artworks
+        const filter = { status: "approved" }; 
 
         if (category && category !== "all") {
             filter.categories = category;
@@ -27,11 +29,19 @@ const findArtworksByCategoryAndSubcategory = async (req, res) => {
 const findArtworksByArtist = async (req, res) => {
     try {
         const { artistId } = req.params;
-        console.log("Artist ID:", artistId);
+        const { archive } = req.query; // Get the archive status from query params
 
-        const artwork = await Artwork.find({ artistId: artistId }).populate('title').populate('artistId'); // Add populate if necessary
+        const filter = { artistId: artistId };
 
-        console.log("Found Artwork:", artwork);
+        // Filter by archive status if provided
+        if (archive === "private") {
+            filter.archive = "private";
+        } else if (archive === "public") {
+            filter.archive = "public";
+        }
+
+        const artwork = await Artwork.find(filter).populate("artistId"); // Remove .populate('title')
+
         if (!artwork.length) {
             return res.status(404).json({ message: "No artwork found for this artist." });
         }
@@ -49,9 +59,8 @@ const findAll = async (req, res) => {
     } catch (e) {
         res.json(e);
     }
-}
+};
 
-const ActivityLog = require("../model/activityLog");
 const save = async (req, res) => {
     try {
         const { title, dimensions, description, price, medium_used, artistId, categories } = req.body;
@@ -74,12 +83,12 @@ const save = async (req, res) => {
             images: filePath,
             artistId,
             categories,
-            status: "pending", // Default to pending
+            status: "pending",
+            archive: "public", // Set default archive value
         });
 
         await artwork.save();
 
-        // Log the activity
         const activityLog = new ActivityLog({
             userId: artistId,
             userType: "artist",
@@ -88,7 +97,6 @@ const save = async (req, res) => {
         });
         await activityLog.save();
 
-        // Create a notification for the user with a title
         const notification = new Notification({
             userId: artistId,
             title: "Artwork Submission", // Add a title
@@ -160,11 +168,21 @@ const approveArtwork = async (req, res) => {
 const findById = async (req, res) => {
     try {
         const artwork = await Artwork.findById(req.params.id);
-        res.status(200).json(artwork)
+        if (!artwork) {
+            return res.status(404).json({ message: "Artwork not found" });
+        }
+        // Increment the views count
+        artwork.views += 1;
+        await artwork.save();
+
+        // Get the saved count for the artwork
+        const saveCount = await Save.countDocuments({ art_id: artwork._id });
+
+        res.status(200).json({ ...artwork.toObject(), saveCount });
     } catch (e) {
-        res.json(e)
+        res.status(500).json({ message: "An error occurred while fetching the artwork.", error: e.message });
     }
-}
+};
 
 const deleteById = async (req, res) => {
     try {
@@ -222,8 +240,6 @@ const updateArtwork = async (req, res) => {
         });
     }
 };
-
-
 
 const getPendingArtworks = async (req, res) => {
     try {
@@ -315,5 +331,6 @@ module.exports = {
     deleteById,
     updateArtwork,
     findArtworksByArtist,
-    findArtworksByCategoryAndSubcategory, getPendingArtworks
-}
+    findArtworksByCategoryAndSubcategory,
+    getPendingArtworks,
+};
