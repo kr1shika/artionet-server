@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ["artist", "buyer"],
         required: true,
-        default: "buyer"
+        default: "role"
     },
     desc: {
         type: String,

@@ -9,10 +9,6 @@ const artworkSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    description: {
-        type: String,
-        required: true
-    },
     price: {
         type: String,
         required: true
@@ -48,6 +44,10 @@ const artworkSchema = new mongoose.Schema({
     },
     status: { type: String, enum: ["pending", "approved", "declined"], default: "pending" },
     adminComment: {
+        type: String,
+        required: false
+    },
+    creators_note: {
         type: String,
         required: false
     }

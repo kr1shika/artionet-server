@@ -10,9 +10,15 @@ const AuthRouter = require("./route/adminRoute");
 const userNotification = require("./route/userNotification");
 const activityLog = require("./route/activityLogRoute");
 
+
 const cors = require("cors");
 const path = require("path");
 const { save } = require('./controller/artworkController');
+
+const dotenv = require("dotenv");
+dotenv.config({ path: "./config/config.env" });
+
+
 app.use("/artwork_space", express.static(path.join(__dirname, "artwork_space")));
 app.use("/artist_identity", express.static(path.join(__dirname, "artist_identity")));
 
@@ -28,7 +34,7 @@ const corsOptions = {
 // Apply CORS middleware with options
 app.use(cors(corsOptions));
 
-const port = 5055;
+const port = process.env.PORT || 5055;
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });

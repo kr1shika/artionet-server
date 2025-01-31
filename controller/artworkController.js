@@ -3,10 +3,21 @@ const Notification = require("../model/userNotification");
 const Save = require("../model/save_arts"); // Import the Save model
 const ActivityLog = require("../model/activityLog");
 
+const getPopularCategories = async (req, res) => {
+    try {
+        const categories = await Artwork.aggregate([
+            { $group: { _id: "$categories", count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+        ]);
+        res.status(200).json(categories);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching popular categories", error: error.message });
+    }
+};
 const findArtworksByCategoryAndSubcategory = async (req, res) => {
     try {
         const { category, subcategory } = req.params;
-        const filter = { status: "approved" }; 
+        const filter = { status: "approved" };
 
         if (category && category !== "all") {
             filter.categories = category;
@@ -63,28 +74,28 @@ const findAll = async (req, res) => {
 
 const save = async (req, res) => {
     try {
-        const { title, dimensions, description, price, medium_used, artistId, categories } = req.body;
+        const { title, dimensions, price, medium_used, artistId, categories, creators_note } = req.body; // Add creators_note
         const filePath = req.file ? `artwork_space/${req.file.originalname}` : null;
 
         if (!filePath) {
             return res.status(400).json({ message: "Image file is required." });
         }
 
-        if (!title || !dimensions || !description || !price || !medium_used || !artistId || !categories) {
+        if (!title || !dimensions || !price || !medium_used || !artistId || !categories) {
             return res.status(400).json({ message: "All fields are required." });
         }
-
         const artwork = new Artwork({
             title,
             dimensions,
-            description,
+
             price,
             medium_used,
             images: filePath,
             artistId,
             categories,
             status: "pending",
-            archive: "public", // Set default archive value
+            archive: "public",
+            creators_note,
         });
 
         await artwork.save();
@@ -206,7 +217,7 @@ const updateArtwork = async (req, res) => {
         const {
             title,
             dimensions,
-            description,
+            creators_note,
             price,
             medium_used,
             categories,
@@ -215,11 +226,11 @@ const updateArtwork = async (req, res) => {
 
         if (title) artwork.title = title;
         if (dimensions) artwork.dimensions = dimensions;
-        if (description) artwork.description = description;
         if (price) artwork.price = price;
         if (medium_used) artwork.medium_used = medium_used;
         if (categories) artwork.categories = categories;
         if (subcategories) artwork.subcategories = subcategories;
+        if (creators_note) artwork.creators_note = creators_note;
 
         if (req.file) {
             const filePath = `artwork_space/${req.file.originalname}`;
@@ -249,7 +260,6 @@ const getPendingArtworks = async (req, res) => {
             .populate("artistId") // Populate artist details if needed
             .skip((page - 1) * limit) // Skip for pagination
             .limit(Number(limit)); // Limit the number of results
-
         if (!pendingArtworks.length) {
             return res.status(404).json({
                 success: false,
@@ -333,4 +343,5 @@ module.exports = {
     findArtworksByArtist,
     findArtworksByCategoryAndSubcategory,
     getPendingArtworks,
+    getPopularCategories
 };
