@@ -50,6 +50,10 @@ const artworkSchema = new mongoose.Schema({
     creators_note: {
         type: String,
         required: false
+    },
+    views: {
+        type: Number,
+        default: 0 // Default to 0 views
     }
 });
 

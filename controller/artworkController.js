@@ -36,22 +36,24 @@ const findArtworksByCategoryAndSubcategory = async (req, res) => {
         res.status(500).json({ message: "An error occurred while fetching artworks.", error: e.message });
     }
 };
-
 const findArtworksByArtist = async (req, res) => {
     try {
         const { artistId } = req.params;
-        const { archive } = req.query; // Get the archive status from query params
+        const { archive, status } = req.query;
 
         const filter = { artistId: artistId };
 
-        // Filter by archive status if provided
         if (archive === "private") {
             filter.archive = "private";
         } else if (archive === "public") {
             filter.archive = "public";
         }
 
-        const artwork = await Artwork.find(filter).populate("artistId"); // Remove .populate('title')
+        if (status) {
+            filter.status = status; 
+        }
+
+        const artwork = await Artwork.find(filter).populate("artistId");
 
         if (!artwork.length) {
             return res.status(404).json({ message: "No artwork found for this artist." });
@@ -182,11 +184,7 @@ const findById = async (req, res) => {
         if (!artwork) {
             return res.status(404).json({ message: "Artwork not found" });
         }
-        // Increment the views count
-        artwork.views += 1;
-        await artwork.save();
 
-        // Get the saved count for the artwork
         const saveCount = await Save.countDocuments({ art_id: artwork._id });
 
         res.status(200).json({ ...artwork.toObject(), saveCount });
@@ -331,11 +329,33 @@ const unarchiveArtwork = async (req, res) => {
     }
 };
 
+const incrementViews = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const artwork = await Artwork.findById(id);
+
+        if (!artwork) {
+            return res.status(404).json({ message: "Artwork not found" });
+        }
+
+        // Increment views
+        artwork.views += 1;
+        await artwork.save();
+
+        res.status(200).json({ message: "Views incremented", views: artwork.views });
+    } catch (error) {
+        res.status(500).json({ message: "Error incrementing views", error: error.message });
+    }
+};
+
+
+
 module.exports = {
     archiveArtwork,
     unarchiveArtwork,
     approveArtwork,
     findAll,
+    incrementViews,
     save,
     findById,
     deleteById,
