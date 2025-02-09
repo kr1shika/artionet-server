@@ -31,11 +31,12 @@ router.delete("/notifications/:notificationId", async (req, res) => {
 });
 
 module.exports = router;
+
 const getNotificationsByUser = async (req, res) => {
     try {
         const { userId } = req.params;
 
-        const notifications = await Notification.find({ userId: userId }).sort({ createdAt: -1 });
+        const notifications = await Notification.find({ userId: userId, deleted: false }).sort({ createdAt: -1 });
 
         if (!notifications.length) {
             return res.status(404).json({ message: "No notifications found for this user." });

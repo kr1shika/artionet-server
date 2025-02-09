@@ -3,11 +3,13 @@ const mongoose = require("mongoose");
 const purchaseSchema = new mongoose.Schema({
     art_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Artworks"
+        ref: "Artworks",
+        required: true
     },
     buyer_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Users"
+        ref: "Users",
+        required: true
     },
     address: {
         type: String,
@@ -15,6 +17,8 @@ const purchaseSchema = new mongoose.Schema({
     },
     status: {
         type: String,
+        enum: ["Order Confirmed", "Order Processing", "Shipped", "Completed"], 
+        default: "Order Confirmed", 
         required: true
     },
     phone_number: {

@@ -35,7 +35,7 @@ const save = async (req, res) => {
             desc,
             artistname,
             role,
-            profilepic, // Add the profile picture filename from the request body
+            profilepic,
         });
 
         await user.save();
@@ -81,6 +81,53 @@ const save = async (req, res) => {
         res.status(500).json({ error: e.message });
     }
 };
+
+
+const save_web = async (req, res) => {
+    try {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(req.body.password, salt);
+        const user = new User({ ...req.body, password: hashedPassword });
+        await user.save();
+        const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 587,
+            secure: false,
+            auth: {
+                user: "krishikakh@gmail.com",
+                pass: "oysqizvoqqbnucnl"
+            }
+        });
+        let subject = "";
+        let htmlContent = "";
+
+        if (user.role === "artist") {
+            subject = "Artist Registration Successful";
+            htmlContent = `
+                <h1>Welcome to Artionet, Artist!</h1>
+                <p>We are excited to have you on board as a creative force. Showcase your art and connect with buyers!</p>
+                <p>Your User ID: ${user.id}</p>
+            `;
+        } else if (user.role === "buyer") {
+            subject = "Buyer Registration Successful";
+            htmlContent = `
+                <h1>Welcome to Artionet, Buyer!</h1>
+                <p>We are thrilled to have you with us. Explore unique art pieces from talented artists!</p>
+                <p>Your User ID: ${user.id}</p>
+            `;
+        }
+        const info = await transporter.sendMail({
+            from: "krishikakh@gmail.com",
+            to: user.email,
+            subject: subject,
+            html: htmlContent
+        });
+        res.status(201).json({ user, info });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+};
+
 
 // login 
 const jwt = require("jsonwebtoken");
@@ -161,12 +208,10 @@ const update = async (req, res) => {
         if (contact_no) user.contact_no = contact_no;
         if (desc) user.desc = desc;
         if (artistname) user.artistname = artistname;
-
         // Handle image upload
         if (req.file) {
             user.profilepic = req.file.filename;
         }
-
         await user.save();
         res.status(200).json({ message: "User updated successfully", user });
     } catch (error) {
@@ -203,7 +248,7 @@ exports.uploadImage = asyncHandler(async (req, res, next) => {
 
 module.exports = {
     findAll,
-    save,
+    save,save_web,
     findById,
     deleteById,
     update,
